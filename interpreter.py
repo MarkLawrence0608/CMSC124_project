@@ -2,13 +2,6 @@ import re
 import tkinter as tk
 from tkinter import filedialog
 from pathlib import Path
-'''
-Create Parser
-Create Dictionary for RegEx
-Identify SUM DIFF PRODUKT QUOSHUNT
-SPACING
-VARIABLES
-'''
 class Interpreter:
     def __init__(self, root):
         self.root = root
@@ -27,6 +20,9 @@ class Interpreter:
         token_pattern = r'"[^"]*"|\S+'
         tokens = re.findall(token_pattern, line.strip())
         return tokens
+
+    def extract_value(self, val):
+        pass
     
     def parser(self, tokens):
         if not tokens:
@@ -40,8 +36,7 @@ class Interpreter:
             "BTW": r"^BTW.*$",
             "OBTW": r"^OBTW.*$",
             "TLDR": r"^TLDR$",
-            "I HAS A": r"^I HAS A (\w+)$",
-            "ITZ": r"^ITZ$",
+            "I HAS A": r"^I HAS A (\w+)(?: ITZ (.+))?$",
             "R": r"^R$",
             "SUM OF": r"^SUM OF$",
             "DIFF OF": r"^DIFF OF$",
@@ -62,7 +57,7 @@ class Interpreter:
             "MAEK": r"^MAEK$",
             "A": r"^A$",
             "IS NOW A": r"^IS NOW A$",
-            "VISIBLE": r"^VISIBLE$",
+            "VISIBLE": r"^VISIBLE (.+)$",
             "GIMMEH": r"^GIMMEH$",
             "O RLY?": r"^O RLY\?$",
             "YA RLY": r"^YA RLY$",
@@ -85,15 +80,30 @@ class Interpreter:
             "FOUND YR": r"^FOUND YR$",
             "I IZ": r"^I IZ$",
             "MKAY": r"^MKAY$",
+            "AN": r"^AN$"
         }
         # ============== Match keywords condition ==============
         
         for keyword, pattern in keywords.items():
             match = re.match(pattern, ' '.join(tokens))
             if match:
-                # If the pattern matches, handle specific cases for the matched keyword
+                
+                if keyword == "I HAS A":
+                    variable = match.group(1)
+                    variable_value = match.group(2)
+                    if variable_value:
+                        self.variables[variable] = variable_value
+                        return(f"Lexeme: {keyword}, Variable: {variable}, Lexeme: ITZ, Value: {self.variables[variable]}")
+                    else:
+                        self.variables[variable] = "NOOB"
+                        return(f"Lexeme: {keyword}, Variable: {variable}, Value: {self.variables[variable]}")
+
                 if keyword == "VISIBLE":
-                    return f"Lexeme: {keyword}"
+                    value = match.group(1).strip()
+                    if value in self.variables:
+                        return f"Lexeme: VISIBLE, Output: {self.variables[value]}"
+                    else:
+                        return f"Lexeme: VISIBLE, Output: {value.strip('\"')}"
                 elif keyword == "BTW":
                     return f"Lexeme: {keyword}, Comment: {' '.join(tokens[1:])}"
                 elif keyword == "HAI":
@@ -129,7 +139,9 @@ class Interpreter:
     def mainloop(self):
         with open(self.file_path, 'r') as file:
             for line in file:
-                self.extract(line.strip())
+                line = line.strip()
+                if line:
+                    self.extract(line)
                 
 
 root = tk.Tk()
