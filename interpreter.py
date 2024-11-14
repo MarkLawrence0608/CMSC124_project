@@ -33,8 +33,8 @@ class Interpreter:
             return None
         
         keywords = {
-            "START": r"^HAI$",
-            "END": r"^KTHXBYE$",
+            "HAI": r"^HAI$",
+            "KTHXBYE": r"^KTHXBYE$",
             "WAZZUP": r"^WAZZUP$",
             "BUHBYE": r"^BUHBYE$",
             "BTW": r"^BTW.*$",
@@ -88,13 +88,27 @@ class Interpreter:
         }
         # ============== Match keywords condition ==============
         
-        print(tokens)
+        for keyword, pattern in keywords.items():
+            match = re.match(pattern, ' '.join(tokens))
+            if match:
+                # If the pattern matches, handle specific cases for the matched keyword
+                if keyword == "VISIBLE":
+                    return f"Lexeme: {keyword}"
+                elif keyword == "BTW":
+                    return f"Lexeme: {keyword}, Comment: {' '.join(tokens[1:])}"
+                elif keyword == "HAI":
+                    return f"Lexeme: {keyword}"
+                elif keyword == "END":
+                    return f"Lexeme: {keyword}"
+                else:
+                    return f"Lexeme: {keyword}"
         
         return None
         
     def extract(self, line):
-        if "BTW" in line:
-            line = line.split("BTW", 1)[0].strip()
+        # if "BTW" in line:
+        #     line = line.split("BTW", 1)[0].strip()
+        # Ignore BTW comment
 
         if line == "OBTW":
             self.comment_block = True
