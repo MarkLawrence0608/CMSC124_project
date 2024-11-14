@@ -23,7 +23,15 @@ class Interpreter:
         self.canvas.pack(side=tk.TOP, padx=(2,0), pady=(2,0))
         self.mainloop()
     
-    def parser(self, line):
+    def tokenize(self, line):
+        token_pattern = r'"[^"]*"|\S+'
+        tokens = re.findall(token_pattern, line.strip())
+        return tokens
+    
+    def parser(self, tokens):
+        if not tokens:
+            return None
+        
         keywords = {
             "START": r"^HAI$",
             "END": r"^KTHXBYE$",
@@ -32,7 +40,7 @@ class Interpreter:
             "BTW": r"^BTW.*$",
             "OBTW": r"^OBTW.*$",
             "TLDR": r"^TLDR$",
-            "I HAS A": r"^I HAS A$",
+            "I HAS A": r"^I HAS A (\w+)$",
             "ITZ": r"^ITZ$",
             "R": r"^R$",
             "SUM OF": r"^SUM OF$",
@@ -78,13 +86,36 @@ class Interpreter:
             "I IZ": r"^I IZ$",
             "MKAY": r"^MKAY$",
         }
-        # ============== Match keywords condition ==============   
+        # ============== Match keywords condition ==============
+        
+        print(tokens)
+        
+        return None
+        
+    def extract(self, line):
+        if "BTW" in line:
+            line = line.split("BTW", 1)[0].strip()
+
+        if line == "OBTW":
+            self.comment_block = True
+            return
+        
+        if self.comment_block:
+            if line == "TLDR":
+                self.comment_block = False
+            return
+        
+        tokens = self.tokenize(line)
+        parsed = self.parser(tokens)
+        
+        if parsed:
+            print(parsed)
 
 
     def mainloop(self):
         with open(self.file_path, 'r') as file:
             for line in file:
-                pass
+                self.extract(line.strip())
                 
 
 root = tk.Tk()
