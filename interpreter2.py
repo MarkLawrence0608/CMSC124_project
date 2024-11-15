@@ -71,7 +71,6 @@ class Interpreter:
             "AN": r"^AN$"
         }
 
-        # Continue with standard keyword matching
         for keyword, pattern in keywords.items():
             match = re.match(pattern, ' '.join(tokens))
             if match:
@@ -107,6 +106,10 @@ class Interpreter:
         return None
 
     def extract(self, line):
+        # if "BTW" in line:
+        #     line = line.split("BTW", 1)[0].strip()
+        # Ignore BTW comment
+        
         if line == "OBTW":
             self.comment_block = True
             return
