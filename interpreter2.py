@@ -78,9 +78,13 @@ class Interpreter:
                 if keyword == "I HAS A":
                     variable = match.group(1)
                     variable_value = match.group(2)
+                    outputs = []
                     if variable_value:
                         self.variables[variable] = variable_value
-                        return f"Lexeme: {keyword}, Variable: {variable}, Lexeme: ITZ, Value: {self.variables[variable]}"
+                        tokens = self.tokenize(self.variables[variable])
+                        for token in tokens:
+                            outputs.append(f"Variable: {token}")
+                        return f"Lexeme: {keyword}, Variable: {variable}, Lexeme: ITZ, {', '.join(outputs)}"
                     else:
                         self.variables[variable] = "NOOB"
                         return f"Lexeme: {keyword}, Variable: {variable}, Value: {self.variables[variable]}"
