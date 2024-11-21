@@ -17,7 +17,7 @@ class Interpreter:
         self.mainloop()
 
     def tokenize(self, line):
-        token_pattern = r'"[^"]*"|\S+|[+\-*/%=<>&|^!"\'(),.]'  
+        token_pattern = r'"[^"]*"|\S+|[.]'  
         tokens = re.findall(token_pattern, line.strip())
 
         complex_tokens = ['SUM OF', 'PRODUKT OF', 'BIGGR OF', 'DIFF OF', 'QUOSHUNT OF']
@@ -109,7 +109,7 @@ class Interpreter:
         # if "BTW" in line:
         #     line = line.split("BTW", 1)[0].strip()
         # Ignore BTW comment
-        
+
         if line == "OBTW":
             self.comment_block = True
             return
