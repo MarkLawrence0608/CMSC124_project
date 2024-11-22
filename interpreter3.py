@@ -43,7 +43,7 @@ class Interpreter:
             "TLDR": r"^TLDR$",
             "I HAS A": r"^I HAS A (\w+)(?: ITZ (.+))?$",
             "VISIBLE": r"^VISIBLE (.+)$",
-            "GIMMEH": r"^GIMMEH$",
+            "GIMMEH": r"^GIMMEH (.+)$",
             "O RLY?": r"^O RLY\?$",
             "YA RLY": r"^YA RLY$",
             "MEBBE": r"^MEBBE$",
@@ -64,7 +64,8 @@ class Interpreter:
             "FOUND YR": r"^FOUND YR$",
             "I IZ": r"^I IZ$",
             "MKAY": r"^MKAY$",
-            "AN": r"^AN$"
+            "AN": r"^AN$",
+            "BOTH SAEM": r"^BOTH SAEM (\w+)(?: AN (.+))?$"
         }
 
         for keyword, pattern in keywords.items():
@@ -99,6 +100,16 @@ class Interpreter:
                         self.variables[variable] = "NOOB"
                         return f"Variable '{variable}' is assigned default value: {self.variables[variable]}"
 
+                if keyword == "GIMMEH":
+                    variable = match.group(1).strip()
+                    
+                    variable_pattern = r'^[A-Za-z]+[0-9A-Za-z_]*$' 
+                    
+                    if not re.match(variable_pattern, variable):
+                            return f"Error: Invalid variable '{variable}'."
+            
+                    return f"User Input is assigned to: '{variable}' "
+
                 if keyword == "VISIBLE":
                     value = match.group(1).strip()
                     return f"Output: {value}"
@@ -114,8 +125,41 @@ class Interpreter:
                 
                 if keyword == "BUHBYE":
                     return f"End of variable section: {keyword}"
+                
                 if keyword == "WAZZUP":
                     return f"Start of variable section: {keyword}"
+    
+                if keyword == "O RLY?":
+                    return f"Conditional declaration: {keyword}"
+                    
+                
+                if keyword == "YA RLY?":
+                    return f"conditional IF: {keyword}"
+                    
+                
+                if keyword == "NO WAI":
+                    return f"Conditional ELSE: {keyword}"
+                    
+                
+                if keyword == "MEBBE":
+                    return f"Conditional ELSE-IF: {keyword}, Condition: {' '.join(tokens[1:])}"
+                
+                if keyword == "OIC":
+                    return f"End of Conditonal declaration: {keyword}"
+                
+                if keyword == "BOTH SAEM":
+                    compare1 = match.group(1)
+                    compare2 = match.group(2)
+                    
+                    variable_pattern = r'^([A-Za-z]+[0-9A-Za-z_]*)|[0-9]+$' 
+                    
+                    if not re.match(variable_pattern, compare1):
+                            return f"Error: Invalid variable or literal '{variable}'."
+                    if not re.match(variable_pattern, compare2):
+                            return f"Error: Invalid variable or literal '{variable}'."
+            
+                    return f"Comparison: '{compare1}' == '{compare2}' "
+
 
                 return f"Lexeme: {keyword}"
 
