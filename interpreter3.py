@@ -197,7 +197,7 @@ class Interpreter:
                 break
 
         if not first_non_comment_line or first_non_comment_line != "HAI":
-            print("Error: Program must start with 'HAI', a function, or a comment.")
+            print("Error: Program must start with 'HAI'")
             return  
 
         with open(self.file_path, 'r') as file:
